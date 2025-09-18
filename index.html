@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-Tongue Dashboard</title>
+
+ <!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<!-- Chart.js for radar -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Plotly for cluster plot -->
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<!-- Your CSS & JS -->
+<link rel="stylesheet" href="style.css">
+<script src="script.js" defer></script>
+
+</head>
+
+<body>
+
+<header>
+  <h1>E-Tongue Analysis Dashboard</h1>
+  <div class="status-bar">
+    <span id="connectionStatus">Device: Connected</span>
+    <span id="lastReadingTime">Last reading: --:--:--</span>
+    <span id="currentSampleId">Sample ID: --</span>
+  </div>
+</header>
+
+<main>
+  <!-- Mode Toggle -->
+  <div class="mode-toggle">
+    <label class="switch">
+      <input type="checkbox" id="modeSwitch">
+      <span class="slider round"></span>
+    </label>
+    <span id="modeLabel">Mock Mode</span>
+  </div>
+
+  <!-- Live measurement tiles -->
+  <section class="tiles">
+    <div class="tile"><h3>pH</h3><p id="phValue">--</p></div>
+    <div class="tile"><h3>EC/TDS</h3><p id="ecValue">--</p></div>
+    <div class="tile"><h3>UV</h3><p id="uvValue">--</p></div>
+  </section>
+
+ <!-- Prediction panel -->
+<section class="prediction-panel">
+  <h2>Predicted Dravya: <span id="predictedDravya">--</span></h2>
+</section>
+
+
+  <!-- Charts -->
+  <section class="charts">
+    <div class="chart-card">
+      <h3>Rasa Radar</h3>
+      <canvas id="rasaRadar"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>PCA/UMAP Cluster</h3>
+      <div id="clusterPlot" style="width:100%;height:400px;"></div>
+    </div>
+  </section>
+
+  <!-- History table -->
+  <section class="history">
+    <h3>Last 10 Samples</h3>
+    <table id="historyTable">
+      <thead>
+        <tr>
+          <th>Time</th><th>Sample ID</th><th>pH</th><th>EC</th><th>UV</th><th>Prediction</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+</main>
+
+</body>
+</html>
