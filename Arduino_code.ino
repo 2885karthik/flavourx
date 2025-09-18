@@ -1,30 +1,30 @@
 #include <SoftwareSerial.h>
 #include <math.h>
 
-// ===== GUVA UV Sensor + UV LED =====
+
 const int uvSensorPin = A1;   // GUVA analog output
 const int uvLedPin    = 9;    // UV LED control pin
-float I0 = 0;                 // baseline reference intensity (clear water)
+float I0 = 0;                 // baseline reference uv intensity 
 
-// ===== pH Sensor =====
+
 const int PIN_PH = A0;        // pH analog pin
-const float VREF = 5;         // Arduino UNO ADC reference (5V)
+const float VREF = 5;         // Arduino UNO ADC reference 
 const int ADC_MAX = 1023;
 
-const float PH_LOW  = 4.01;   // calibration point 1
-const float PH_HIGH = 9.18;   // calibration point 2
-const float V4 = 0.936;       // Voltage at pH 4.01 buffer
-const float V9 = 1.587;       // Voltage at pH 9.18 buffer
+const float PH_LOW  = 4.01;   // calibration 
+const float PH_HIGH = 9.18;   // calibration 
+const float V4 = 0.936;       // Voltage at pH 4.01 
+const float V9 = 1.587;       // Voltage at pH 9.18 
 
-float PH_A = 0.0;  // slope
-float PH_B = 0.0;  // intercept
+float PH_A = 0.0;  
+float PH_B = 0.0;  
 
-// ===== Serial to ESP32 =====
+
 SoftwareSerial espSerial(2, 3);
 
-// ===== Utility functions =====
+
 float measureUVIntensity(int samples) {
-  digitalWrite(uvLedPin, HIGH);   // turn on UV LED
+  digitalWrite(uvLedPin, HIGH);   
   delay(500);
 
   long sum = 0;
@@ -55,12 +55,12 @@ void setup() {
   digitalWrite(uvLedPin, LOW);
   delay(1000);
 
-  // UV baseline measurement (clear water)
-  I0 = measureUVIntensity(20); // increase samples for stability
+  
+  I0 = measureUVIntensity(20); 
   Serial.print("Baseline I0 (clear water) = ");
   Serial.println(I0);
 
-  // pH calibration
+  
   PH_A = (PH_HIGH - PH_LOW) / (V9 - V4);
   PH_B = PH_LOW - PH_A * V4;
   Serial.println("pH Sensor Calibration Complete:");
@@ -69,22 +69,20 @@ void setup() {
 }
 
 void loop() {
-  // ===== UV Absorbance for suspended solution =====
-  float I = measureUVIntensity(20);  // measure multiple times
+  
+  float I = measureUVIntensity(20);  
   float absorbance = 0;
 
   if (I > 0 && I0 > 0) {
-    absorbance = -log10(I / I0);  // Beer-Lambert Law
+    absorbance = -log10(I / I0);  
   }
 
-  // Correct negative or very low readings
- 
+  
 
-  // ===== pH Measurement =====
   float V = readVoltage(PIN_PH);
   float pH = PH_A * V + PH_B;
 
-  // ===== Print to Serial Monitor =====
+  
   Serial.print("UV Intensity: ");
   Serial.print(I);
   Serial.print(" | Absorbance: ");
@@ -94,7 +92,7 @@ void loop() {
   Serial.print(" V | pH: ");
   Serial.println(pH, 2);
 
-  // ===== Send to ESP32 =====
+ 
   espSerial.print("UV:");
   espSerial.print(absorbance, 3);
   espSerial.print(",pH:");
