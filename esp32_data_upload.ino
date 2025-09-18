@@ -1,30 +1,29 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 
-// ===== WiFi details =====
+
 const char* ssid = "crowley";
 const char* password = "noodles123";
 
-// ===== Google Apps Script Web App URL =====
+
 String GAS_URL = "https://script.google.com/macros/s/AKfycbyqEgtDAf8OjUL-LtwEues2tNptQDEhlUDK3V2cm2RDTgtz_mrZljbkfAzcwEhPFztlVQ/exec";
 
-// ===== UART pins for Arduino connection =====
+
 #define RXD2 16   // ESP32 RX2 from Arduino TX
 #define TXD2 17   // ESP32 TX2 to Arduino RX (not used)
 
-// ===== Sensor pins =====
-const int PIN_GUVA = 34;    // GUVA analog input
-const int PIN_TDS  = 35;    // TDS analog input
-const int PIN_UVLED = 25;   // UV LED control
+
+const int PIN_GUVA = 34;    
+const int PIN_TDS  = 35;    
+const int PIN_UVLED = 25;  
 
 const float VREF = 3.3;
 const int ADC_MAX = 4095;
-float TDS_K = 0.5;           // TDS calibration factor
+float TDS_K = 0.5;           
 
-// ===== Product label =====
-String PRODUCT_LABEL = "Tulsi";  // Change per product or make dynamic
 
-// ===== Function to read analog voltage =====
+String PRODUCT_LABEL = "Tulsi";  
+
 float readVoltage(int pin, int samples = 16) {
   unsigned long sum = 0;
   for (int i = 0; i < samples; i++) {
@@ -34,7 +33,7 @@ float readVoltage(int pin, int samples = 16) {
   return (float(sum)/samples) / ADC_MAX * VREF;
 }
 
-// ===== WiFi connection =====
+
 void connectWiFi() {
   if(WiFi.status() == WL_CONNECTED) return;
 
@@ -83,24 +82,23 @@ void loop() {
     }
   }
 
-  // 2️⃣ Read GUVA
   digitalWrite(PIN_UVLED, HIGH);
   delay(100);
   float guvaV = readVoltage(PIN_GUVA);
   digitalWrite(PIN_UVLED, LOW);
 
-  // 3️⃣ Read TDS
+  
   float tdsV = readVoltage(PIN_TDS);
   float tdsPPM = tdsV * 1000 * TDS_K;
 
-  // 4️⃣ Print to Serial Monitor
+
   Serial.println("---- Measurement ----");
   if (ph.length() > 0) Serial.println("pH: " + ph);
   Serial.print("GUVA Voltage: "); Serial.println(guvaV, 3);
   Serial.print("TDS: "); Serial.println(tdsPPM, 1);
   Serial.println("Label: " + PRODUCT_LABEL);
 
-  // 5️⃣ Send to Google Sheets
+  
   if (ph.length() > 0 && WiFi.status() == WL_CONNECTED) {
     // Encode label (spaces -> %20)
     String labelEncoded = PRODUCT_LABEL;
